@@ -38,11 +38,11 @@ class IndexController extends Controller {
         foreach ( $res as $k => $v ) //循环excel表
         {
             $k=$k-2;//addAll方法要求数组必须有0索引
-            $data[$k]['a'] = $v [0];//创建二维数组
-            $data[$k]['b'] = $v [1];
-            $data[$k]['c'] = $v [2];
-            $data[$k]['d'] = $v [3];
-            $data[$k]['e'] = $v [4];
+            $data[$k]['a'] = $v [0] ? :'';//创建二维数组
+            $data[$k]['b'] = $v [1] ? :'';
+            $data[$k]['c'] = $v [2] ? :'';
+            $data[$k]['d'] = $v [3] ? :'';
+            $data[$k]['e'] = $v [4] ? :'';
         }
         $test=M('test');//M方法
         print_r($data);
