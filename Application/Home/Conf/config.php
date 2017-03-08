@@ -7,6 +7,7 @@ return array(
     'DB_NAME'               =>  'tp_test',          // 数据库名
     'DB_USER'               =>  'root',      // 用户名
     'DB_PWD'                =>  'root',          // 密码
-    'DB_PORT'               =>  '',        // 端口
-    'DB_PREFIX'             =>  '',    // 数据库表前缀
+
+    /* 数据缓存设置 */
+    'DATA_CACHE_KEY'        =>  'think',	// 缓存文件KEY (仅对File方式缓存有效)
 );

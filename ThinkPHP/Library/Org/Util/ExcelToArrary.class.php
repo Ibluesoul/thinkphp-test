@@ -38,4 +38,9 @@ class ExcelToArrary {
         }
         return $excelData;
     }
+
+    public function write()
+    {
+        
+    }
 }

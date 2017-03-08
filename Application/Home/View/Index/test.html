@@ -1,4 +1,7 @@
-<form method="post" action="index/add" enctype="multipart/form-data">
+<if condition="$excel_count neq 0 ">上一次还有{$excel_count}条记录没有上传<br /><a href="{:U('index/upload')}">只上传这{$excel_count}条记录</a> | <a href="{:U('index/d')}">清空记录</a><br />
+<else />
+</if>
+<form method="post" action="{:U('index/add')}" enctype="multipart/form-data">
     <h3>导入Excel表：</h3><input  type="file" name="file_stu" />
 
     <input type="submit"  value="导入" />

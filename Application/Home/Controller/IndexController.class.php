@@ -4,7 +4,16 @@ use Think\Controller;
 use Org\Util\ExcelToArrary;
 class IndexController extends Controller {
     public function index(){
+        $count = 0;
+        if(S('excel_data')){//上一次的上传任务还没有完成
+            $count = count(S('excel_data'));
+        }
+        $this->excel_count = $count;
         $this->display('test');
+    }
+
+    public function upload(){
+        $this->writeExcelData(S('excel_data'));
     }
 
     public function add()
@@ -34,20 +43,61 @@ class IndexController extends Controller {
         }
         $ExcelToArrary=new ExcelToArrary();//实例化
         $res=$ExcelToArrary->read(C('UPLOAD_DIR').$file_name,"UTF-8",$file_type);//传参,判断office2007还是office2003
-
+        /*删除刚才上传的缓存*/
+        S('excel_data_true',null);
+        S('excel_data_false',null);
         foreach ( $res as $k => $v ) //循环excel表
         {
-            $k=$k-2;//addAll方法要求数组必须有0索引
-            $data[$k]['a'] = $v [0] ? :'';//创建二维数组
-            $data[$k]['b'] = $v [1] ? :'';
-            $data[$k]['c'] = $v [2] ? :'';
-            $data[$k]['d'] = $v [3] ? :'';
-            $data[$k]['e'] = $v [4] ? :'';
+            $data = array(
+                $k => array(
+                    'a' => $v [0] ? :'',
+                    'b' => $v [1] ? :'',
+                    'c' => $v [2] ? :'',
+                    'd' => $v [3] ? :'',
+                    'e' => $v [4] ? :'',
+                )
+            );
+
+            /*验证通过则写入缓存*/
+            if($this->validate($data[$k])){
+                S('excel_data_true',S('excel_data_true')?S('excel_data_true')+$data:$data);
+            }else{
+                S('excel_data_false',S('excel_data_false')?S('excel_data_false')+$data:$data);
+            }
         }
+
+        S('excel_data',S('excel_data')?S('excel_data')+S('excel_data_true'):S('excel_data_true'));//把成功通过验证的数据写入缓存
+
+        if(S('excel_data_false')){//如果有未通过验证的数据
+            $this->redirect('index/download');
+        }
+
+        $this->writeExcelData(S('excel_data'));
+    }
+
+    public function download()
+    {
+        $this->data_true_length = count(S('excel_data_true'));
+        $this->data_false_key = array_keys(S('excel_data_false'));
+        $this->display('download');
+    }
+
+    public function downloadExcel()
+    {
+
+    }
+
+    public function d()
+    {
+        $this->ddd();
+        $this->redirect('index/index');
+    }
+
+    private function writeExcelData($data)
+    {
         $test=M('test');//M方法
-        print_r($data);
-        $result=$test->addAll($data);
-       // print_r($result);die();
+
+        $result=$test->addAll(array_values($data));//addAll方法要求数组必须有0索引
         if(! $result)
         {
             $this->error('导入数据库失败');
@@ -56,6 +106,26 @@ class IndexController extends Controller {
         else
         {
             $this->success ( '导入成功' );
+            /*导入成功清除缓存*/
+            $this->ddd();
         }
+    }
+
+    private function ddd()
+    {
+        S('excel_data',null);
+        S('excel_data_true',null);
+        S('excel_data_false',null);
+    }
+
+    private function validate($data)
+    {
+        foreach($data as $v){
+            if($v == '')
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
