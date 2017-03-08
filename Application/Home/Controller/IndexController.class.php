@@ -60,13 +60,13 @@ class IndexController extends Controller {
 
             /*验证通过则写入缓存*/
             if($this->validate($data[$k])){
-                S('excel_data_true',S('excel_data_true')?S('excel_data_true')+$data:$data);
+                S('excel_data_true',S('excel_data_true')?S('excel_data_true')+$data:$data,3600);
             }else{
-                S('excel_data_false',S('excel_data_false')?S('excel_data_false')+$data:$data);
+                S('excel_data_false',S('excel_data_false')?S('excel_data_false')+$data:$data,3600);
             }
         }
 
-        S('excel_data',S('excel_data')?S('excel_data')+S('excel_data_true'):S('excel_data_true'));//把成功通过验证的数据写入缓存
+        S('excel_data',S('excel_data')?S('excel_data')+S('excel_data_true'):S('excel_data_true'),3600);//把成功通过验证的数据写入缓存
 
         if(S('excel_data_false')){//如果有未通过验证的数据
             $this->redirect('index/download');
